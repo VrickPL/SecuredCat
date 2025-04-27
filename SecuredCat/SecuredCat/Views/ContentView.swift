@@ -8,9 +8,10 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject var navCoordinator = NavCoordinator()
+    
     var body: some View {
-        LoginViewControllerRepresentable()
-            .edgesIgnoringSafeArea(.all)
+        navCoordinator.currentView
     }
 }
 

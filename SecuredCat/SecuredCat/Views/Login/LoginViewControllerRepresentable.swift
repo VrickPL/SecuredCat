@@ -9,11 +9,11 @@ import UIKit
 import SwiftUI
 
 struct LoginViewControllerRepresentable: UIViewControllerRepresentable {
+    var coordinator: LoginCoordinatorProtocol? = nil
+    
     func makeUIViewController(context: Context) -> LoginViewController {
-        return LoginViewController()
+        return LoginViewController(coordinator: coordinator)
     }
-
-    func updateUIViewController(_ vc: LoginViewController, context: Context) {
-        
-    }
+    
+    func updateUIViewController(_ vc: LoginViewController, context: Context) {}
 }

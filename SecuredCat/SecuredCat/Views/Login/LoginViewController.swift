@@ -8,6 +8,18 @@
 import UIKit
 
 class LoginViewController: UIViewController {
+    var coordinator: LoginCoordinatorProtocol?
+
+    init(coordinator: LoginCoordinatorProtocol? = nil) {
+        self.coordinator = coordinator
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     private let symbolImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "lock.fill")
@@ -97,6 +109,8 @@ class LoginViewController: UIViewController {
 
 extension LoginViewController: SecurePinEntryViewDelegate {
     func didEnterCompletePin(_ pin: String) {
-        // TODO: to implement
+        DispatchQueue.main.async {
+            self.coordinator?.isLogged = true
+        }
     }
 }
