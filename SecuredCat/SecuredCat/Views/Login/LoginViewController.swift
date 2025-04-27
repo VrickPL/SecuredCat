@@ -14,13 +14,12 @@ class LoginViewController: UIViewController {
         self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
     }
-    
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private let symbolImageView: UIImageView = {
+    private let lockImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "lock.fill")
         imageView.tintColor = UIColor.label
@@ -31,7 +30,6 @@ class LoginViewController: UIViewController {
 
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Enter Your PIN"
         label.font = UIFont.preferredFont(forTextStyle: .title1)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -64,18 +62,18 @@ class LoginViewController: UIViewController {
     }
 
     private func setupUI() {
-        view.addSubview(symbolImageView)
+        view.addSubview(lockImageView)
         view.addSubview(titleLabel)
         view.addSubview(securePinEntryView)
         view.addSubview(resetButton)
         
         NSLayoutConstraint.activate([
-            symbolImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            symbolImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            symbolImageView.widthAnchor.constraint(equalToConstant: 50),
-            symbolImageView.heightAnchor.constraint(equalToConstant: 50),
+            lockImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            lockImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            lockImageView.widthAnchor.constraint(equalToConstant: 50),
+            lockImageView.heightAnchor.constraint(equalToConstant: 50),
 
-            titleLabel.topAnchor.constraint(equalTo: symbolImageView.bottomAnchor, constant: 20),
+            titleLabel.topAnchor.constraint(equalTo: lockImageView.bottomAnchor, constant: 20),
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
 
             securePinEntryView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 30),
@@ -86,10 +84,18 @@ class LoginViewController: UIViewController {
             resetButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             resetButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
+        
+        updateTitleLabel()
     }
 
     private func setupActions() {
         resetButton.addTarget(self, action: #selector(resetTapped), for: .touchUpInside)
+    }
+    
+    @objc private func resetTapped() {
+        PINManager.shared.resetPIN()
+        updateTitleLabel()
+        securePinEntryView.clearTextField()
     }
     
     private func setupDismissKeyboardGesture() {
@@ -102,15 +108,50 @@ class LoginViewController: UIViewController {
         view.endEditing(true)
     }
     
-    @objc private func resetTapped() {
-        // TODO: to implement
+    private func updateTitleLabel() {
+        if PINManager.shared.isPINSet() {
+            titleLabel.text = "Enter Your PIN"
+        } else {
+            titleLabel.text = "Set your PIN"
+        }
+        
+    }
+    
+    private func login() {
+        animateLockOpening {
+            self.coordinator?.isLogged = true
+        }
+    }
+
+    private func animateLockOpening(completion: @escaping () -> Void) {
+        UIView.transition(with: lockImageView, duration: 0.5, options: .transitionFlipFromTop, animations: {
+            self.lockImageView.image = UIImage(systemName: "lock.open.fill")
+        }) { _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                completion()
+            }
+        }
+    }
+
+    private func animateShake() {
+        lockImageView.shake()
+        titleLabel.shake()
+        securePinEntryView.shake()
     }
 }
 
 extension LoginViewController: SecurePinEntryViewDelegate {
     func didEnterCompletePin(_ pin: String) {
-        DispatchQueue.main.async {
-            self.coordinator?.isLogged = true
+        if PINManager.shared.isPINSet() {
+            if PINManager.shared.verifyPIN(pin) {
+                login()
+            } else {
+                animateShake()
+                securePinEntryView.clearTextField()
+            }
+        } else {
+            PINManager.shared.savePIN(pin)
+            login()
         }
     }
 }
