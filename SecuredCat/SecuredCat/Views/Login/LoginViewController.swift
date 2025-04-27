@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import LocalAuthentication
 
 class LoginViewController: UIViewController {
     var coordinator: LoginCoordinatorProtocol?
@@ -49,6 +50,14 @@ class LoginViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
+    
+    private let faceIDButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Face ID Login", for: .normal)
+        button.titleLabel?.font = UIFont.preferredFont(forTextStyle: .footnote)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -66,6 +75,7 @@ class LoginViewController: UIViewController {
         view.addSubview(titleLabel)
         view.addSubview(securePinEntryView)
         view.addSubview(resetButton)
+        view.addSubview(faceIDButton)
         
         NSLayoutConstraint.activate([
             lockImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
@@ -80,7 +90,10 @@ class LoginViewController: UIViewController {
             securePinEntryView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             securePinEntryView.widthAnchor.constraint(equalToConstant: 300),
             securePinEntryView.heightAnchor.constraint(equalToConstant: 60),
-
+            
+            faceIDButton.topAnchor.constraint(equalTo: securePinEntryView.bottomAnchor, constant: 20),
+            faceIDButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
             resetButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             resetButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
@@ -90,6 +103,7 @@ class LoginViewController: UIViewController {
 
     private func setupActions() {
         resetButton.addTarget(self, action: #selector(resetTapped), for: .touchUpInside)
+        faceIDButton.addTarget(self, action: #selector(faceIDTapped), for: .touchUpInside)
     }
     
     @objc private func resetTapped() {
@@ -104,6 +118,16 @@ class LoginViewController: UIViewController {
         view.addGestureRecognizer(dismissKeyboardTap)
     }
     
+    @objc private func faceIDTapped() {
+        BiometricAuthenticationManager.shared.authenticateUser { [weak self] success, _ in
+            if success {
+                self?.login()
+            } else {
+                self?.animateShake()
+            }
+        }
+    }
+    
     @objc private func dismissKeyboard() {
         view.endEditing(true)
     }
@@ -112,9 +136,8 @@ class LoginViewController: UIViewController {
         if PINManager.shared.isPINSet() {
             titleLabel.text = "Enter Your PIN"
         } else {
-            titleLabel.text = "Set your PIN"
+            titleLabel.text = "Set Your PIN"
         }
-        
     }
     
     private func login() {
