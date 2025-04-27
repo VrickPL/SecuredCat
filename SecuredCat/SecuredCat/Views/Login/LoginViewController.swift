@@ -8,6 +8,15 @@
 import UIKit
 
 class LoginViewController: UIViewController {
+    private let symbolImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(systemName: "lock.fill")
+        imageView.tintColor = UIColor.label
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Enter Your PIN"
@@ -43,12 +52,18 @@ class LoginViewController: UIViewController {
     }
 
     private func setupUI() {
+        view.addSubview(symbolImageView)
         view.addSubview(titleLabel)
         view.addSubview(securePinEntryView)
         view.addSubview(resetButton)
         
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 50),
+            symbolImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            symbolImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            symbolImageView.widthAnchor.constraint(equalToConstant: 50),
+            symbolImageView.heightAnchor.constraint(equalToConstant: 50),
+
+            titleLabel.topAnchor.constraint(equalTo: symbolImageView.bottomAnchor, constant: 20),
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
 
             securePinEntryView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 30),
