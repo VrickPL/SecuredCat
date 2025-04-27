@@ -75,7 +75,6 @@ class LoginViewController: UIViewController {
         view.addSubview(titleLabel)
         view.addSubview(securePinEntryView)
         view.addSubview(resetButton)
-        view.addSubview(faceIDButton)
         
         NSLayoutConstraint.activate([
             lockImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
@@ -91,12 +90,18 @@ class LoginViewController: UIViewController {
             securePinEntryView.widthAnchor.constraint(equalToConstant: 300),
             securePinEntryView.heightAnchor.constraint(equalToConstant: 60),
             
-            faceIDButton.topAnchor.constraint(equalTo: securePinEntryView.bottomAnchor, constant: 20),
-            faceIDButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
             resetButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             resetButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
+        
+        if PINManager.shared.isPINSet() {
+            view.addSubview(faceIDButton)
+
+            NSLayoutConstraint.activate([
+                faceIDButton.topAnchor.constraint(equalTo: securePinEntryView.bottomAnchor, constant: 20),
+                faceIDButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            ])
+        }
         
         updateTitleLabel()
     }
@@ -110,6 +115,8 @@ class LoginViewController: UIViewController {
         PINManager.shared.resetPIN()
         updateTitleLabel()
         securePinEntryView.clearTextField()
+        
+        faceIDButton.isHidden = true
     }
     
     private func setupDismissKeyboardGesture() {
