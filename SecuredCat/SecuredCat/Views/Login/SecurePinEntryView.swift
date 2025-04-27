@@ -109,6 +109,10 @@ class SecurePinEntryView: UIView {
             }
         }
     }
+    
+    func clearTextField() {
+        currentText.removeAll()
+    }
 }
 
 extension SecurePinEntryView: UITextFieldDelegate {

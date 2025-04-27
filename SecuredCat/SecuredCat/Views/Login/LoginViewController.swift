@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import LocalAuthentication
 
 class LoginViewController: UIViewController {
     var coordinator: LoginCoordinatorProtocol?
@@ -14,13 +15,12 @@ class LoginViewController: UIViewController {
         self.coordinator = coordinator
         super.init(nibName: nil, bundle: nil)
     }
-    
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private let symbolImageView: UIImageView = {
+    private let lockImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "lock.fill")
         imageView.tintColor = UIColor.label
@@ -31,7 +31,6 @@ class LoginViewController: UIViewController {
 
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.text = "Enter Your PIN"
         label.font = UIFont.preferredFont(forTextStyle: .title1)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -51,6 +50,14 @@ class LoginViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
+    
+    private let faceIDButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Face ID Login", for: .normal)
+        button.titleLabel?.font = UIFont.preferredFont(forTextStyle: .footnote)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,32 +71,45 @@ class LoginViewController: UIViewController {
     }
 
     private func setupUI() {
-        view.addSubview(symbolImageView)
+        view.addSubview(lockImageView)
         view.addSubview(titleLabel)
         view.addSubview(securePinEntryView)
         view.addSubview(resetButton)
+        view.addSubview(faceIDButton)
         
         NSLayoutConstraint.activate([
-            symbolImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            symbolImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            symbolImageView.widthAnchor.constraint(equalToConstant: 50),
-            symbolImageView.heightAnchor.constraint(equalToConstant: 50),
+            lockImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            lockImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            lockImageView.widthAnchor.constraint(equalToConstant: 50),
+            lockImageView.heightAnchor.constraint(equalToConstant: 50),
 
-            titleLabel.topAnchor.constraint(equalTo: symbolImageView.bottomAnchor, constant: 20),
+            titleLabel.topAnchor.constraint(equalTo: lockImageView.bottomAnchor, constant: 20),
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
 
             securePinEntryView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 30),
             securePinEntryView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             securePinEntryView.widthAnchor.constraint(equalToConstant: 300),
             securePinEntryView.heightAnchor.constraint(equalToConstant: 60),
-
+            
+            faceIDButton.topAnchor.constraint(equalTo: securePinEntryView.bottomAnchor, constant: 20),
+            faceIDButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
             resetButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             resetButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
+        
+        updateTitleLabel()
     }
 
     private func setupActions() {
         resetButton.addTarget(self, action: #selector(resetTapped), for: .touchUpInside)
+        faceIDButton.addTarget(self, action: #selector(faceIDTapped), for: .touchUpInside)
+    }
+    
+    @objc private func resetTapped() {
+        PINManager.shared.resetPIN()
+        updateTitleLabel()
+        securePinEntryView.clearTextField()
     }
     
     private func setupDismissKeyboardGesture() {
@@ -98,19 +118,63 @@ class LoginViewController: UIViewController {
         view.addGestureRecognizer(dismissKeyboardTap)
     }
     
+    @objc private func faceIDTapped() {
+        BiometricAuthenticationManager.shared.authenticateUser { [weak self] success, _ in
+            if success {
+                self?.login()
+            } else {
+                self?.animateShake()
+            }
+        }
+    }
+    
     @objc private func dismissKeyboard() {
         view.endEditing(true)
     }
     
-    @objc private func resetTapped() {
-        // TODO: to implement
+    private func updateTitleLabel() {
+        if PINManager.shared.isPINSet() {
+            titleLabel.text = "Enter Your PIN"
+        } else {
+            titleLabel.text = "Set Your PIN"
+        }
+    }
+    
+    private func login() {
+        animateLockOpening {
+            self.coordinator?.isLogged = true
+        }
+    }
+
+    private func animateLockOpening(completion: @escaping () -> Void) {
+        UIView.transition(with: lockImageView, duration: 0.5, options: .transitionFlipFromTop, animations: {
+            self.lockImageView.image = UIImage(systemName: "lock.open.fill")
+        }) { _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                completion()
+            }
+        }
+    }
+
+    private func animateShake() {
+        lockImageView.shake()
+        titleLabel.shake()
+        securePinEntryView.shake()
     }
 }
 
 extension LoginViewController: SecurePinEntryViewDelegate {
     func didEnterCompletePin(_ pin: String) {
-        DispatchQueue.main.async {
-            self.coordinator?.isLogged = true
+        if PINManager.shared.isPINSet() {
+            if PINManager.shared.verifyPIN(pin) {
+                login()
+            } else {
+                animateShake()
+                securePinEntryView.clearTextField()
+            }
+        } else {
+            PINManager.shared.savePIN(pin)
+            login()
         }
     }
 }
