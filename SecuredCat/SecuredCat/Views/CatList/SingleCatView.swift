@@ -17,7 +17,6 @@ struct SingleCatView: View {
                 ZStack {
                     Rectangle()
                         .fill(Color.gray.opacity(0.3))
-                        .aspectRatio(1.0, contentMode: .fit)
                     ProgressView()
                 }
             case .success(let image):
@@ -30,7 +29,6 @@ struct SingleCatView: View {
                         ZStack {
                             Rectangle()
                                 .fill(.ultraThinMaterial)
-                                .blur(radius: 5)
                             
                             Text(breed.name)
                                 .font(.caption)
@@ -43,13 +41,10 @@ struct SingleCatView: View {
                         .frame(height: 30)
                     }
                 }
-                .frame(width: 170, height: 150)
-                .clipped()
             case .failure:
                 ZStack {
                     Rectangle()
                         .fill(Color.red.opacity(0.3))
-                        .aspectRatio(1.0, contentMode: .fit)
                     Image(systemName: "exclamationmark.triangle")
                         .foregroundColor(.red)
                 }
@@ -57,6 +52,7 @@ struct SingleCatView: View {
                 EmptyView()
             }
         }
+        .frame(width: 170, height: 150)
         .cornerRadius(8)
     }
 }

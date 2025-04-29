@@ -34,7 +34,8 @@ final class CatsViewModel: ObservableObject {
         
         let parameters = [
             "page": String(currentPage),
-            "limit": String(catsLimitInQuery)
+            "limit": String(catsLimitInQuery),
+            "has_breeds": "1"
         ]
         let apiConstructor = ApiConstructor(endpoint: .images, parameters: parameters)
         catService.fetchCats(api: apiConstructor)
