@@ -10,7 +10,7 @@ import Foundation
 enum Endpoint {
     private static let baseUrl = "https://api.thecatapi.com/v1"
     
-    case images(limit: Int)
+    case images
     
     var path: String {
         switch self {

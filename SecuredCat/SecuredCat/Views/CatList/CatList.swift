@@ -8,8 +8,39 @@
 import SwiftUI
 
 struct CatList: View {
+    @StateObject var viewModel = CatsViewModel()
+    
+    let columns = [
+        GridItem(.adaptive(minimum: 170), spacing: 8)
+    ]
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationView {
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: 16) {
+                    ForEach(viewModel.cats) { cat in
+                        SingleCatView(cat: cat).onAppear {
+                            if cat.id == viewModel.cats.last?.id && viewModel.hasMore {
+                                viewModel.fetchCats()
+                            }
+                        }
+                    }
+                }
+                .padding()
+                
+                if viewModel.isLoading {
+                    ProgressView()
+                        .padding()
+                }
+            }
+            .refreshable {
+                viewModel.refresh()
+            }
+            .navigationTitle("Cats")
+        }
+        .onAppear {
+            viewModel.fetchCats()
+        }
     }
 }
 

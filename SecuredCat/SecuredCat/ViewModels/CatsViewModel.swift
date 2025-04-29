@@ -34,11 +34,9 @@ final class CatsViewModel: ObservableObject {
         
         let parameters = [
             "page": String(currentPage),
+            "limit": String(catsLimitInQuery)
         ]
-        let apiConstructor = ApiConstructor(
-            endpoint: .images(limit: catsLimitInQuery),
-            parameters: parameters
-        )
+        let apiConstructor = ApiConstructor(endpoint: .images, parameters: parameters)
         catService.fetchCats(api: apiConstructor)
             .sink { [weak self] completion in
                 self?.isLoading = false
