@@ -24,6 +24,7 @@ struct SingleCatView: View {
                     image
                         .resizable()
                         .scaledToFill()
+                        .frame(width: 170, height: 150)
                     
                     if let breed = cat.breeds?.first {
                         ZStack {
@@ -63,7 +64,7 @@ struct SingleCatView: View {
             id: "ai8",
             url: "https://cdn2.thecatapi.com/images/ai8.jpg",
             breeds: [
-                Breed(id: "", name: "chesscat", temperament: nil, lifeSpan: nil, origin: nil)
+                Breed(id: "", name: "chesscat", temperament: nil, lifeSpan: nil, origin: nil, wikipediaUrl: "")
             ]
         )
     )
