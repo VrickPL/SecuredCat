@@ -17,7 +17,12 @@ struct FavoritesView: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                if viewModel.favoriteCats.isEmpty {
+                if viewModel.isLoading {
+                    ProgressView()
+                        .padding()
+                } else if let error = viewModel.error {
+                    ErrorView(error: error, onRetry: viewModel.loadFavorites)
+                } else if viewModel.favoriteCats.isEmpty {
                     Text("No favorites yet.")
                         .foregroundColor(.gray)
                         .padding()
