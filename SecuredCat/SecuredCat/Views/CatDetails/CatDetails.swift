@@ -31,6 +31,9 @@ struct CatDetails: View {
     
     struct CatImageView: View {
         let imageURL: String
+        
+        @State private var isShowingShareSheet = false
+        @State private var showSaveSuccessAlert = false
 
         var body: some View {
             AsyncImage(url: URL(string: imageURL)) { phase in
@@ -45,6 +48,32 @@ struct CatDetails: View {
                         .scaledToFit()
                         .frame(maxWidth: .infinity)
                         .cornerRadius(12)
+                        .contextMenu {
+                            Button {
+                                ImageActions.saveImage(from: imageURL) { isSuccess in
+                                    self.showSaveSuccessAlert = isSuccess
+                                }
+                            } label: {
+                                Label("Save Image", systemImage: "square.and.arrow.down")
+                            }
+                            
+                            Button {
+                                isShowingShareSheet = true
+                            } label: {
+                                Label("Share Image", systemImage: "square.and.arrow.up")
+                            }
+                        }
+                        .sheet(isPresented: $isShowingShareSheet) {
+                            if #available(iOS 16.0, *) {
+                                ShareSheet(items: [URL(string: imageURL)!])
+                                    .presentationDetents([.medium, .large])
+                            } else {
+                                ShareSheet(items: [URL(string: imageURL)!])
+                            }
+                        }
+                        .alert("Saved!", isPresented: $showSaveSuccessAlert) {
+                           Button("OK", role: .cancel) { }
+                        }
                 case .failure:
                     Image(systemName: "exclamationmark.triangle")
                         .resizable()
