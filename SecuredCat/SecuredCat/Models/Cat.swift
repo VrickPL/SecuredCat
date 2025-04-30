@@ -19,6 +19,7 @@ struct Breed: Decodable, Identifiable {
     let temperament: String?
     let lifeSpan: String?
     let origin: String?
+    let wikipediaUrl: String?
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -26,5 +27,6 @@ struct Breed: Decodable, Identifiable {
         case temperament
         case lifeSpan = "life_span"
         case origin
+        case wikipediaUrl = "wikipedia_url"
     }
 }

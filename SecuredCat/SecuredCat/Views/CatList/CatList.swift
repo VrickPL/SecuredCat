@@ -19,7 +19,18 @@ struct CatList: View {
             ScrollView {
                 LazyVGrid(columns: columns, spacing: 16) {
                     ForEach(viewModel.cats) { cat in
-                        SingleCatView(cat: cat).onAppear {
+                        Group {
+                            if let breeds = cat.breeds, !breeds.isEmpty {
+                                NavigationLink(
+                                    destination: CatDetails(cat: cat),
+                                    label: {
+                                        SingleCatView(cat: cat)
+                                    }
+                                )
+                            } else {
+                                SingleCatView(cat: cat)
+                            }
+                        }.onAppear {
                             if cat.id == viewModel.cats.last?.id && viewModel.hasMore {
                                 viewModel.fetchCats()
                             }
