@@ -39,9 +39,10 @@ struct CatDetails: View {
             AsyncImage(url: URL(string: imageURL)) { phase in
                 switch phase {
                 case .empty:
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 200)
+                    SkeletonImageView()
+                        .cornerRadius(16)
+                        .padding(.horizontal)
+                        .frame(maxWidth: .infinity, idealHeight: 200)
                 case .success(let image):
                     image
                         .resizable()
