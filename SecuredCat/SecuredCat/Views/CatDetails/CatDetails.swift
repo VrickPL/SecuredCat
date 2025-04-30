@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CatDetails: View {
     let cat: Cat
+    @StateObject var favoritesManager = FavoritesManager.shared
 
     var body: some View {
         ScrollView {
@@ -27,6 +28,14 @@ struct CatDetails: View {
         }
         .navigationTitle("Cat details")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            Button {
+                favoritesManager.toggleFavorite(cat: cat)
+            } label: {
+                Image(systemName: favoritesManager.isFavorite(catID: cat.id) ? "heart.fill" : "heart")
+                    .foregroundColor(.red)
+            }
+        }
     }
     
     struct CatImageView: View {

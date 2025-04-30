@@ -19,7 +19,7 @@ class NavCoordinator: ObservableObject, SplashScreenCoordinatorProtocol, LoginCo
         } else if !isLogged {
             LoginViewControllerRepresentable(coordinator: self)
         } else {
-            CatList()
+            LoggedView()
         }
     }
 }

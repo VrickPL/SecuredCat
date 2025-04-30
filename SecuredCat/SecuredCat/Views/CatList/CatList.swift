@@ -17,7 +17,7 @@ struct CatList: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                if true {
+                if viewModel.cats.isEmpty && viewModel.error == nil && !viewModel.isLoading {
                     Text("No cats available.")
                         .foregroundColor(.gray)
                         .padding()
@@ -64,7 +64,7 @@ struct CatList: View {
         }
         .onAppear {
             if !viewModel.cats.isEmpty {
-//                viewModel.fetchCats()
+                viewModel.fetchCats()
             }
         }
     }
