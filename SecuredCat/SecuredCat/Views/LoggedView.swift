@@ -12,17 +12,15 @@ struct LoggedView: View {
         TabView {
             CatList()
                 .tabItem {
-                    Image(systemName: "house")
+                    Image(systemName: "cat.fill")
                     Text("Cats")
                 }
-//                .background(Color.background)
             
             FavoritesView()
                 .tabItem {
                     Image(systemName: "heart.fill")
                     Text("Favorites")
                 }
-//                .background(Color.background)
         }
     }
 }
