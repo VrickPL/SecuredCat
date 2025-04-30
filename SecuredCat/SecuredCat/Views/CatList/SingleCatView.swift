@@ -14,11 +14,7 @@ struct SingleCatView: View {
         AsyncImage(url: URL(string: cat.url)) { phase in
             switch phase {
             case .empty:
-                ZStack {
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.3))
-                    ProgressView()
-                }
+                SkeletonImageView()
             case .success(let image):
                 ZStack(alignment: .bottom) {
                     image
