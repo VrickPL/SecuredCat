@@ -39,6 +39,11 @@ struct CatList: View {
                 }
                 .padding()
                 
+                if let error = viewModel.error {
+                    ErrorView(error: error) {
+                        viewModel.fetchCats()
+                    }
+                }
                 if viewModel.isLoading {
                     ProgressView()
                         .padding()

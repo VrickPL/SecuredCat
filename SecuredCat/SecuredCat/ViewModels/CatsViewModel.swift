@@ -56,7 +56,10 @@ final class CatsViewModel: ObservableObject {
     }
     
     func refresh() {
+        error = nil
         cats.removeAll()
+        hasMore = true
+        currentPage = 0
         fetchCats()
     }
 }
