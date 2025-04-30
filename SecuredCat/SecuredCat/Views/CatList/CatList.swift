@@ -17,7 +17,7 @@ struct CatList: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                if viewModel.cats.isEmpty && viewModel.error == nil && !viewModel.isLoading {
+                if true {
                     Text("No cats available.")
                         .foregroundColor(.gray)
                         .padding()
@@ -63,7 +63,9 @@ struct CatList: View {
             .searchable(text: $viewModel.searchQuery)
         }
         .onAppear {
-            viewModel.fetchCats()
+            if !viewModel.cats.isEmpty {
+//                viewModel.fetchCats()
+            }
         }
     }
 }
