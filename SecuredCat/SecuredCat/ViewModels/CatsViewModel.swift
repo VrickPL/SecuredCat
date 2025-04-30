@@ -13,6 +13,11 @@ final class CatsViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var error: Error?
     @Published var hasMore = true
+    @Published var searchQuery: String = "" {
+        didSet {
+            refresh()
+        }
+    }
     
     private let catService: CatService
     private var cancellables = Set<AnyCancellable>()
@@ -32,11 +37,17 @@ final class CatsViewModel: ObservableObject {
         
         isLoading = true
         
-        let parameters = [
+        var parameters = [
             "page": String(currentPage),
             "limit": String(catsLimitInQuery),
             "has_breeds": "1"
         ]
+        
+        let search = searchQuery.trimmingCharacters(in: .whitespaces)
+        if !search.isEmpty {
+            parameters["breed_ids"] = search.lowercased() + ","
+        }
+        
         let apiConstructor = ApiConstructor(endpoint: .images, parameters: parameters)
         catService.fetchCats(api: apiConstructor)
             .sink { [weak self] completion in
