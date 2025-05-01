@@ -5,7 +5,6 @@
 //  Created by Jan Kazubski on 27/04/2025.
 //
 
-
 import UIKit
 
 protocol SecurePinEntryViewDelegate: AnyObject {
@@ -112,6 +111,13 @@ class SecurePinEntryView: UIView {
     
     func clearTextField() {
         currentText.removeAll()
+    }
+    
+    func simulatePinFill() {
+        for label in labels {
+            label.text = "•"
+            label.textColor = .label
+        }
     }
 }
 

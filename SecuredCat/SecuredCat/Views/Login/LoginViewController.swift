@@ -141,8 +141,10 @@ class LoginViewController: UIViewController {
     @objc private func faceIDTapped() {
         BiometricAuthenticationManager.shared.authenticateUser { [weak self] success, _ in
             if success {
+                self?.securePinEntryView.simulatePinFill()
                 self?.login()
             } else {
+                self?.securePinEntryView.clearTextField()
                 self?.animateShake()
             }
         }
