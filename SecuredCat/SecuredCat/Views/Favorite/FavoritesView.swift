@@ -44,6 +44,9 @@ struct FavoritesView: View {
             .refreshable {
                 viewModel.loadFavorites()
             }
+            .onAppear {
+                viewModel.loadFavorites()
+            }
         }
     }
 }

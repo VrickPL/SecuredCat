@@ -28,33 +28,8 @@ final class FavoritesViewModel: ObservableObject {
     }
     
     func loadFavorites() {
-        favoriteCats = []
         isLoading = true
-        
-        let localFavorites = FavoritesManager.shared.getFavoriteCats()
-        
-        let publishers = localFavorites.enumerated().map { (index, localCat) in
-            catService.fetchCatDetails(by: localCat.id)
-                .map { fetchedCat -> (Int, Cat) in
-                    (index, fetchedCat)
-                }
-                .replaceError(with: (index, localCat))
-        }
-        
-        Publishers.MergeMany(publishers)
-            .collect()
-            .map { results in
-                results.sorted(by: { $0.0 < $1.0 }).map { $0.1 }
-            }
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] completion in
-                self?.isLoading = false
-                if case .failure(let error) = completion {
-                    self?.error = error
-                }
-            } receiveValue: { [weak self] cats in
-                self?.favoriteCats = cats
-            }
-            .store(in: &cancellables)
+        favoriteCats = FavoritesManager.shared.getFavoriteCats()
+        isLoading = false
     }
 }
