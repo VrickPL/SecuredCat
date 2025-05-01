@@ -33,13 +33,19 @@ final class FavoritesViewModel: ObservableObject {
         
         let localFavorites = FavoritesManager.shared.getFavoriteCats()
         
-        let publishers = localFavorites.map { localCat in
+        let publishers = localFavorites.enumerated().map { (index, localCat) in
             catService.fetchCatDetails(by: localCat.id)
-                .replaceError(with: localCat)
+                .map { fetchedCat -> (Int, Cat) in
+                    (index, fetchedCat)
+                }
+                .replaceError(with: (index, localCat))
         }
         
         Publishers.MergeMany(publishers)
             .collect()
+            .map { results in
+                results.sorted(by: { $0.0 < $1.0 }).map { $0.1 }
+            }
             .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
                 self?.isLoading = false

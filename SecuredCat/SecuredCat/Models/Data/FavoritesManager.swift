@@ -13,7 +13,7 @@ class FavoritesManager: ObservableObject {
     
     let persistentContainer: NSPersistentContainer
 
-    @Published var favoriteCatIDs: Set<String> = []
+    @Published var favoriteCatIDs: [String] = []
     
     private init() {
         persistentContainer = NSPersistentContainer(name: "FavoriteCats")
@@ -29,10 +29,12 @@ class FavoritesManager: ObservableObject {
     func fetchFavorites() {
         let context = persistentContainer.viewContext
         let request: NSFetchRequest<FavoriteCatEntity> = FavoriteCatEntity.fetchRequest()
+        let sortDescriptor = NSSortDescriptor(key: "dateAdded", ascending: true)
+        request.sortDescriptors = [sortDescriptor]
 
         do {
             let results = try context.fetch(request)
-            self.favoriteCatIDs = Set(results.compactMap { $0.id })
+            self.favoriteCatIDs = results.compactMap { $0.id }
         } catch {
             print(error.localizedDescription)
         }
@@ -53,15 +55,16 @@ class FavoritesManager: ObservableObject {
                let favorite = results.first {
                 context.delete(favorite)
             }
-            favoriteCatIDs.remove(cat.id)
+            favoriteCatIDs.removeAll { $0 == cat.id }
         } else {
             let favorite = FavoriteCatEntity(context: context)
             favorite.id = cat.id
             favorite.url = cat.url
+            favorite.dateAdded = Date()
 
             do {
                 try context.save()
-                favoriteCatIDs.insert(cat.id)
+                favoriteCatIDs.append(cat.id)
             } catch {
                 print(error.localizedDescription)
             }
@@ -69,20 +72,22 @@ class FavoritesManager: ObservableObject {
     }
     
     func getFavoriteCats() -> [Cat] {
-            let context = persistentContainer.viewContext
-            let request: NSFetchRequest<FavoriteCatEntity> = FavoriteCatEntity.fetchRequest()
+        let context = persistentContainer.viewContext
+        let request: NSFetchRequest<FavoriteCatEntity> = FavoriteCatEntity.fetchRequest()
+        let sortDescriptor = NSSortDescriptor(key: "dateAdded", ascending: true)
+        request.sortDescriptors = [sortDescriptor]
 
-            do {
-                let results = try context.fetch(request)
-                return results.compactMap { entity in
-                    if let id = entity.id, let url = entity.url {
-                        return Cat(id: id, url: url, breeds: nil)
-                    }
-                    return nil
+        do {
+            let results = try context.fetch(request)
+            return results.compactMap { entity in
+                if let id = entity.id, let url = entity.url {
+                    return Cat(id: id, url: url, breeds: nil)
                 }
-            } catch {
-                print(error.localizedDescription)
-                return []
+                return nil
             }
+        } catch {
+            print(error.localizedDescription)
+            return []
         }
+    }
 }

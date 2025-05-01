@@ -28,7 +28,7 @@ struct FavoritesView: View {
                         .padding()
                 } else {
                     LazyVGrid(columns: columns, spacing: 16) {
-                        ForEach(viewModel.favoriteCats, id: \.id) { cat in
+                        ForEach(viewModel.favoriteCats) { cat in
                             NavigationLink(
                                 destination: CatDetails(cat: cat),
                                 label: {
