@@ -90,4 +90,20 @@ class FavoritesManager: ObservableObject {
             return []
         }
     }
+    
+    func clearFavorites() {
+        let context = persistentContainer.viewContext
+        let request: NSFetchRequest<FavoriteCatEntity> = FavoriteCatEntity.fetchRequest()
+        
+        do {
+            let favorites = try context.fetch(request)
+            for favorite in favorites {
+                context.delete(favorite)
+            }
+            try context.save()
+            favoriteCatIDs = []
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
 }

@@ -74,7 +74,6 @@ class LoginViewController: UIViewController {
         view.addSubview(lockImageView)
         view.addSubview(titleLabel)
         view.addSubview(securePinEntryView)
-        view.addSubview(resetButton)
         
         NSLayoutConstraint.activate([
             lockImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
@@ -88,18 +87,19 @@ class LoginViewController: UIViewController {
             securePinEntryView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 30),
             securePinEntryView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             securePinEntryView.widthAnchor.constraint(equalToConstant: 300),
-            securePinEntryView.heightAnchor.constraint(equalToConstant: 60),
-            
-            resetButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
-            resetButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            securePinEntryView.heightAnchor.constraint(equalToConstant: 60)
         ])
         
         if PINManager.shared.isPINSet() {
             view.addSubview(faceIDButton)
+            view.addSubview(resetButton)
 
             NSLayoutConstraint.activate([
                 faceIDButton.topAnchor.constraint(equalTo: securePinEntryView.bottomAnchor, constant: 20),
-                faceIDButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+                faceIDButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                
+                resetButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+                resetButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
             ])
         }
         
@@ -112,11 +112,24 @@ class LoginViewController: UIViewController {
     }
     
     @objc private func resetTapped() {
-        PINManager.shared.resetPIN()
-        updateTitleLabel()
-        securePinEntryView.clearTextField()
+        let alert = UIAlertController(
+            title: "Reset PIN",
+            message: "Are you sure you want to reset your PIN and clear all saved app data?",
+            preferredStyle: .alert
+        )
         
-        faceIDButton.isHidden = true
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Reset", style: .destructive, handler: { [weak self] _ in
+            PINManager.shared.resetPIN()
+            FavoritesManager.shared.clearFavorites()
+            self?.updateTitleLabel()
+            self?.securePinEntryView.clearTextField()
+            self?.faceIDButton.isHidden = true
+            self?.resetButton.isHidden = true
+
+        }))
+        
+        present(alert, animated: true, completion: nil)
     }
     
     private func setupDismissKeyboardGesture() {
