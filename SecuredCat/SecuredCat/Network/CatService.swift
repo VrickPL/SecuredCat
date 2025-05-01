@@ -14,4 +14,9 @@ final class CatService {
     func fetchCats(api: ApiConstructor) -> AnyPublisher<[Cat], Error> {
         return networkService.fetchData(api: api)
     }
+    
+    func fetchCatDetails(by catId: String) -> AnyPublisher<Cat, Error> {
+        let apiConstructor = ApiConstructor(endpoint: .imageDetails(catId), parameters: [:])
+        return networkService.fetchData(api: apiConstructor)
+    }
 }

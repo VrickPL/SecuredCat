@@ -63,7 +63,9 @@ struct CatList: View {
             .searchable(text: $viewModel.searchQuery)
         }
         .onAppear {
-            viewModel.fetchCats()
+            if !viewModel.cats.isEmpty {
+                viewModel.fetchCats()
+            }
         }
     }
 }

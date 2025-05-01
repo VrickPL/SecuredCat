@@ -8,7 +8,16 @@
 import SwiftUI
 
 struct CatDetails: View {
-    let cat: Cat
+    @StateObject var favoritesManager = FavoritesManager.shared
+    @StateObject private var viewModel: CatDetailsViewModel
+    
+    private var cat: Cat {
+        viewModel.cat
+    }
+    
+    init(cat: Cat) {
+        _viewModel = StateObject(wrappedValue: CatDetailsViewModel(cat: cat))
+    }
 
     var body: some View {
         ScrollView {
@@ -19,6 +28,15 @@ struct CatDetails: View {
                 if let breed = cat.breeds?.first {
                     BreedDetailsView(breed: breed)
                         .padding()
+                } else if viewModel.isLoading {
+                    HStack {
+                        Spacer()
+                        ProgressView()
+                            .padding()
+                        Spacer()
+                    }
+                } else if let error = viewModel.error {
+                    ErrorView(error: error, onRetry: viewModel.loadCatDetails)
                 } else {
                     Text("No information about the breed.")
                         .padding()
@@ -27,6 +45,17 @@ struct CatDetails: View {
         }
         .navigationTitle("Cat details")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            Button {
+                favoritesManager.toggleFavorite(cat: cat)
+            } label: {
+                Image(systemName: favoritesManager.isFavorite(catID: cat.id) ? "heart.fill" : "heart")
+                    .foregroundColor(.red)
+            }
+        }
+        .refreshable {
+            viewModel.loadCatDetails()
+        }
     }
     
     struct CatImageView: View {

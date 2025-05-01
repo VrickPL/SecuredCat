@@ -10,12 +10,14 @@ import Foundation
 enum Endpoint {
     private static let baseUrl = "https://api.thecatapi.com/v1"
     
-    case images
+    case images, imageDetails(String)
     
     var path: String {
         switch self {
         case .images:
             return "/images/search"
+        case .imageDetails(let id):
+            return "/images/\(id)"
         }
     }
     
