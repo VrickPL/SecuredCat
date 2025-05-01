@@ -1,14 +1,19 @@
-<h1 align="center">SecuredCats (in progress...)</h1>
+<h1 align="center">SecuredCat</h1>
 <h3 align="center">iOS app combining SwiftUI and UIKit for secure login and managing favorite cats</h3>
 
-SecuredCats is an innovative iOS application that seamlessly blends **SwiftUI**'s declarative design with the precision of **UIKit**. Built with security and usability in mind, this app leverages **Keychain** (using SimpleKeychain) to securely manage user PINs, while employing **Combine** to fetch data asynchronously from thecatapi.com. Local persistence of users’ favorite cats is ensured through **Core Data**, and both SwiftUI and UIKit components communicate via **UIViewRepresentable** for smooth integration.
+SecuredCat is an innovative iOS application that seamlessly blends **SwiftUI**'s declarative design with the precision of **UIKit**. Built with security and usability in mind, this app leverages **Keychain** (using SimpleKeychain) to securely manage user PINs. The app efficiently retrieves data from thecatapi.com using **Combine** for asynchronous operations, and it ensures that users' favorite cats are stored locally with **Core Data**. Seamless communication between SwiftUI and UIKit components is achieved through **UIViewControllerRepresentable**, resulting in a smooth and integrated user experience.
+
 
 ## Table of Contents
 - [Technologies and Libraries](#technologies-and-libraries)
+- [Configuration](#configuration)
 - [Login Screen](#login-screen)
 - [SwiftUI and UIKit Integration](#swiftui-and-uikit-integration)
 - [Cat List](#cat-list)
+- [Cat Details](#cat-details)
 - [Favorites](#favorites)
+- [Splash Screen](#splash-screen)
+- [Additional info](#additional-info)
 
 
 
@@ -19,43 +24,61 @@ SecuredCats is an innovative iOS application that seamlessly blends **SwiftUI**'
 - **[Combine](https://developer.apple.com/documentation/combine)**
 - **[Core Data](https://developer.apple.com/documentation/coredata)**
 - **[SimpleKeychain](https://github.com/auth0/SimpleKeychain)**
-- **[UIViewRepresentable](https://developer.apple.com/documentation/swiftui/uiviewrepresentable)**
+- **[UIViewControllerRepresentable](https://developer.apple.com/documentation/swiftui/uiviewcontrollerrepresentable)**
 - **[The cat API](https://thecatapi.com)**
 
 
 
+# Configuration
+To check how the app works after cloning this repo, simply navigate to the `NetworkKey` file *(SecuredCat/Network/NetworkKey.swift)* and paste your API key.
+
+<p align="center"> 
+<img src="https://github.com/user-attachments/assets/de85065b-a5dd-44cc-9c5d-d7d0c931e385">
+</p>
+
+
+
 ## Login Screen
-The app opens with a secure login screen, where:
-- Users authenticate themselves using a **PIN**.
-- The PIN is securely stored in the **Keychain** using SimpleKeychain.
-- If no PIN is set, the app prompts the user to create one.
-- A **Reset PIN** button is available at the bottom of the screen to allow users to clear the stored PIN.
-- The login screen is built with **UIKit**.
+The application opens with a secure login screen that authenticates users either via a PIN or **FaceID**. If a PIN has not been set, the user is prompted to create one. The PIN is securely stored using the **Keychain** (via SimpleKeychain), and users have an option to reset it. A "Reset PIN" button is available at the bottom of the screen, allowing users to clear the stored PIN and any associated data from **Core Data**. The login interface, built with UIKit, features smooth animations for both failed and successful login attempts.
 
 
 
 ## SwiftUI and UIKit Integration
-SecuredCats is a hybrid application that leverages the strengths of both **SwiftUI** and **UIKit**:
-- The initial login interface is developed using UIKit.
-- After a successful login, the main content is displayed as SwiftUI views.
-- **UIViewRepresentable** is used to embed UIKit components into SwiftUI.
+SecuredCat is a hybrid application that combines the strengths of both **SwiftUI** and **UIKit**. The initial login interface is developed using UIKit, ensuring robust security and smooth animations. Once a user logs in successfully, the main content is presented using SwiftUI views. UIKit components are seamlessly integrated into the SwiftUI experience through the use of **UIViewControllerRepresentable**, resulting in a unified and fluid user interface.
 
 
 
 
 ## Cat List
-Once authenticated, users are greeted with a dynamic list of cat images and related data:
-- Data is fetched from **thecatapi.com** using **Combine**.
-- The list is designed with SwiftUI.
-- Users can effortlessly browse through the list, with smooth transitions and pull-to-refresh functionality.
+After authentication, users are greeted with a dynamic display of cat images along with relevant data. The cat list is designed using SwiftUI and fetches data from **thecatapi.com** through **Combine**. The interface is built to handle network errors gracefully by displaying an error message along with a button to attempt a retry. A search bar is provided, although it may be limited by API constraints, and a skeleton loading screen is shown while images load. The list is arranged in a lazy grid layout that supports pagination, preventing excessive data downloads and ensuring a smooth browsing experience.
+
+
+
+
+
+## Cat Details
+Upon selecting a cat from the list, the app presents a detailed screen showing the cat’s image and additional information about its breed (if available). This screen not only allows users to view detailed data but also enables them to add or remove the cat from their Favorites list by tapping a heart icon. The design includes provisions for handling unexpected errors by offering a drag to refresh (like in the *Cat List*). Additionally, users can long-press on the image to share it or save it directly to their device, adding a layer of interactivity and convenience.
+
 
 
 
 ## Favorites
-Users can mark their preferred cat images as favorites:
-- Tapping on a heart adds it to the Favorites list.
-- These favorites are persistently stored using **Core Data**.
-- Visual feedback, such as simple animations, enhances the experience when adding or removing favorites.
+The application allows users to mark cat images as favorites. When the heart icon is tapped in the *Cat Details* screen, the selected cat is added to a Favorites list. This list is stored persistently using **Core Data**, ensuring that users can easily access their favorite cats at any time without data loss.
 
 
+
+
+
+## Splash Screen
+Upon launching, the app displays a splash screen.
+
+
+
+
+
+## Additional info
+- SecuredCat follows best practices for network calls by using generics, making it easier to enhance the application's functionality.
+- Custom errors are thrown to provide clear and user-friendly error messages.
+- Important objects such as *CatService* are injected throughout the application to avoid creating duplicate instances.
+- Navigation between screens—from the Splash Screen to the Login and Main View—is efficiently managed by a custom *NavCoordinator*, ensuring a consistent user flow throughout the app.
 
