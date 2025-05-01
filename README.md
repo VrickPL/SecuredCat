@@ -1,7 +1,7 @@
 <h1 align="center">SecuredCat</h1>
 <h3 align="center">iOS app combining SwiftUI and UIKit for secure login and managing favorite cats</h3>
 
-SecuredCat is an innovative iOS application that seamlessly blends **SwiftUI**'s declarative design with the precision of **UIKit**. Built with security and usability in mind, this app leverages **Keychain** (using SimpleKeychain) to securely manage user PINs. The app efficiently retrieves data from thecatapi.com using **Combine** for asynchronous operations, and it ensures that users' favorite cats are stored locally with **Core Data**. Seamless communication between SwiftUI and UIKit components is achieved through **UIViewControllerRepresentable**, resulting in a smooth and integrated user experience.
+SecuredCat is an innovative iOS application that seamlessly blends **SwiftUI**'s declarative design with the precision of **UIKit**. Built with security and usability in mind, this app leverages **Keychain** (using SimpleKeychain) to securely manage user PINs. The app efficiently retrieves data from thecatapi.com using **Combine** for asynchronous operations, and it ensures that users' favorite cats are stored locally with **Core Data**. Seamless communication between SwiftUI and UIKit components is achieved through **UIViewControllerRepresentable**, resulting in a smooth and integrated user experience. SecuredCat supports **iOS 15 and later**, taking full advantage of the modern features available in these versions.
 
 
 ## Table of Contents
