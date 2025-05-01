@@ -26,7 +26,7 @@ class FavoritesManager: ObservableObject {
         }
     }
     
-    func fetchFavorites() {
+    private func fetchFavorites() {
         let context = persistentContainer.viewContext
         let request: NSFetchRequest<FavoriteCatEntity> = FavoriteCatEntity.fetchRequest()
         let sortDescriptor = NSSortDescriptor(key: "dateAdded", ascending: true)

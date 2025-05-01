@@ -10,15 +10,11 @@ import Combine
 
 final class FavoritesViewModel: ObservableObject {
     @Published var favoriteCats: [Cat] = []
-    @Published var isLoading: Bool = false
-    @Published var error: Error? = nil
+    @Published var isLoading = false
     
-    private let catService: CatService
     private var cancellables = Set<AnyCancellable>()
     
-    init(catService: CatService) {
-        self.catService = catService
-
+    init() {
         loadFavorites()
         FavoritesManager.shared.$favoriteCatIDs
             .sink { [weak self] _ in
@@ -28,8 +24,13 @@ final class FavoritesViewModel: ObservableObject {
     }
     
     func loadFavorites() {
-        isLoading = true
-        favoriteCats = FavoritesManager.shared.getFavoriteCats()
-        isLoading = false
+        if !isLoading {
+            self.isLoading = true
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                self.favoriteCats = FavoritesManager.shared.getFavoriteCats()
+                self.isLoading = false
+            }
+        }
     }
 }

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FavoritesView: View {
-    @StateObject var viewModel: FavoritesViewModel
+    @StateObject private var viewModel = FavoritesViewModel()
     private let catService: CatService
     
     let columns = [
@@ -16,7 +16,6 @@ struct FavoritesView: View {
     ]
     
     init(catService: CatService) {
-        _viewModel = StateObject(wrappedValue: FavoritesViewModel(catService: catService))
         self.catService = catService
     }
     
@@ -26,8 +25,6 @@ struct FavoritesView: View {
                 if viewModel.isLoading {
                     ProgressView()
                         .padding()
-                } else if let error = viewModel.error {
-                    ErrorView(error: error, onRetry: viewModel.loadFavorites)
                 } else if viewModel.favoriteCats.isEmpty {
                     Text("No favorites yet.")
                         .foregroundColor(.gray)
