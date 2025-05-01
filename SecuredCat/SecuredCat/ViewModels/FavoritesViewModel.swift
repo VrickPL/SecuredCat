@@ -16,7 +16,7 @@ final class FavoritesViewModel: ObservableObject {
     private let catService: CatService
     private var cancellables = Set<AnyCancellable>()
     
-    init(catService: CatService = CatService()) {
+    init(catService: CatService) {
         self.catService = catService
 
         loadFavorites()

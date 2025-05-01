@@ -15,8 +15,8 @@ struct CatDetails: View {
         viewModel.cat
     }
     
-    init(cat: Cat) {
-        _viewModel = StateObject(wrappedValue: CatDetailsViewModel(cat: cat))
+    init(cat: Cat, catService: CatService) {
+        _viewModel = StateObject(wrappedValue: CatDetailsViewModel(cat: cat, catService: catService))
     }
 
     var body: some View {
@@ -201,6 +201,7 @@ struct CatDetails: View {
                     wikipediaUrl: "aaa"
                 )
             ]
-        )
+        ),
+        catService: CatService()
     )
 }

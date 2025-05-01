@@ -8,11 +8,17 @@
 import SwiftUI
 
 struct FavoritesView: View {
-    @StateObject var viewModel = FavoritesViewModel()
+    @StateObject var viewModel: FavoritesViewModel
+    private let catService: CatService
     
     let columns = [
         GridItem(.adaptive(minimum: 170), spacing: 8)
     ]
+    
+    init(catService: CatService) {
+        _viewModel = StateObject(wrappedValue: FavoritesViewModel(catService: catService))
+        self.catService = catService
+    }
     
     var body: some View {
         NavigationView {
@@ -30,7 +36,7 @@ struct FavoritesView: View {
                     LazyVGrid(columns: columns, spacing: 16) {
                         ForEach(viewModel.favoriteCats) { cat in
                             NavigationLink(
-                                destination: CatDetails(cat: cat),
+                                destination: CatDetails(cat: cat, catService: catService),
                                 label: {
                                     SingleCatView(cat: cat)
                                 }
@@ -52,5 +58,5 @@ struct FavoritesView: View {
 }
 
 #Preview {
-    FavoritesView()
+    FavoritesView(catService: CatService())
 }

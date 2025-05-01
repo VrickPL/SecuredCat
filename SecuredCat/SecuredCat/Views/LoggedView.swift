@@ -8,15 +8,17 @@
 import SwiftUI
 
 struct LoggedView: View {
+    let catService = CatService()
+
     var body: some View {
         TabView {
-            CatList()
+            CatList(catService: catService)
                 .tabItem {
                     Image(systemName: "cat.fill")
                     Text("Cats")
                 }
             
-            FavoritesView()
+            FavoritesView(catService: catService)
                 .tabItem {
                     Image(systemName: "heart.fill")
                     Text("Favorites")

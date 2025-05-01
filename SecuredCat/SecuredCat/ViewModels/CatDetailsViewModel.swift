@@ -16,7 +16,7 @@ final class CatDetailsViewModel: ObservableObject {
     private let catService: CatService
     private var cancellables = Set<AnyCancellable>()
 
-    init(cat: Cat, catService: CatService = CatService()) {
+    init(cat: Cat, catService: CatService) {
         self.catService = catService
         self.cat = cat
         

@@ -25,7 +25,7 @@ final class CatsViewModel: ObservableObject {
     private let catsLimitInQuery = 10
     private var currentPage = 0
     
-    init(catService: CatService = CatService()) {
+    init(catService: CatService) {
         self.catService = catService
         fetchCats()
     }

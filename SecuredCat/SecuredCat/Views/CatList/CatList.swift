@@ -8,11 +8,17 @@
 import SwiftUI
 
 struct CatList: View {
-    @StateObject var viewModel = CatsViewModel()
+    @StateObject var viewModel: CatsViewModel
+    private let catService: CatService
     
     let columns = [
         GridItem(.adaptive(minimum: 170), spacing: 8)
     ]
+    
+    init(catService: CatService) {
+        _viewModel = StateObject(wrappedValue: CatsViewModel(catService: catService))
+        self.catService = catService
+    }
     
     var body: some View {
         NavigationView {
@@ -24,18 +30,12 @@ struct CatList: View {
                 } else {
                     LazyVGrid(columns: columns, spacing: 16) {
                         ForEach(viewModel.cats) { cat in
-                            Group {
-                                if let breeds = cat.breeds, !breeds.isEmpty {
-                                    NavigationLink(
-                                        destination: CatDetails(cat: cat),
-                                        label: {
-                                            SingleCatView(cat: cat)
-                                        }
-                                    )
-                                } else {
+                            NavigationLink(
+                                destination: CatDetails(cat: cat, catService: catService),
+                                label: {
                                     SingleCatView(cat: cat)
                                 }
-                            }
+                            )
                             .onAppear {
                                 if cat.id == viewModel.cats.last?.id && viewModel.hasMore {
                                     viewModel.fetchCats()
@@ -63,7 +63,7 @@ struct CatList: View {
             .searchable(text: $viewModel.searchQuery)
         }
         .onAppear {
-            if !viewModel.cats.isEmpty {
+            if viewModel.cats.isEmpty {
                 viewModel.fetchCats()
             }
         }
@@ -71,5 +71,5 @@ struct CatList: View {
 }
 
 #Preview {
-    CatList()
+    CatList(catService: CatService())
 }
