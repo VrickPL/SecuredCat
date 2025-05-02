@@ -10,12 +10,18 @@ import Combine
 
 final class CatsViewModel: ObservableObject {
     @Published var cats: [Cat] = []
+    @Published var searchCats: [Cat] = []
     @Published var isLoading = false
     @Published var error: Error?
     @Published var hasMore = true
     @Published var searchQuery: String = "" {
         didSet {
-            refresh()
+            let trimmedQuery = searchQuery.trimmingCharacters(in: .whitespaces)
+            if trimmedQuery.isEmpty {
+                searchCats = []
+            } else {
+                fetchSearchCats(with: trimmedQuery)
+            }
         }
     }
     
@@ -37,16 +43,11 @@ final class CatsViewModel: ObservableObject {
         
         isLoading = true
         
-        var parameters = [
+        let parameters = [
             "page": String(currentPage),
             "limit": String(catsLimitInQuery),
             "has_breeds": "1"
         ]
-        
-        let search = searchQuery.trimmingCharacters(in: .whitespaces)
-        if !search.isEmpty {
-            parameters["breed_ids"] = search.lowercased() + ","
-        }
         
         let apiConstructor = ApiConstructor(endpoint: .images, parameters: parameters)
         catService.fetchCats(api: apiConstructor)
@@ -62,6 +63,25 @@ final class CatsViewModel: ObservableObject {
                 if self?.hasMore == true {
                     self?.currentPage += 1
                 }
+            }
+            .store(in: &cancellables)
+    }
+    
+    func fetchSearchCats(with query: String) {
+        isLoading = true
+        
+        let parameters: [String: String] = [
+            "limit": String(catsLimitInQuery),
+            "has_breeds": "1",
+            "breed_ids": query.lowercased() + ","
+        ]
+        
+        let apiConstructor = ApiConstructor(endpoint: .images, parameters: parameters)
+        catService.fetchCats(api: apiConstructor)
+            .replaceError(with: [])
+            .sink { [weak self] matchedCats in
+                self?.searchCats = matchedCats
+                self?.isLoading = false
             }
             .store(in: &cancellables)
     }

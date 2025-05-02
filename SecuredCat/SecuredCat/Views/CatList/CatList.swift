@@ -23,27 +23,47 @@ struct CatList: View {
     var body: some View {
         NavigationView {
             ScrollView {
-                if viewModel.cats.isEmpty && viewModel.error == nil && !viewModel.isLoading {
-                    Text("No cats available.")
-                        .foregroundColor(.gray)
+                if !viewModel.searchQuery.trimmingCharacters(in: .whitespaces).isEmpty {
+                    if viewModel.searchCats.isEmpty && !viewModel.isLoading {
+                        Text("No search results found.")
+                            .foregroundColor(.gray)
+                            .padding()
+                    } else {
+                        LazyVGrid(columns: columns, spacing: 16) {
+                            ForEach(viewModel.searchCats) { cat in
+                                NavigationLink(
+                                    destination: CatDetails(cat: cat, catService: catService),
+                                    label: {
+                                        SingleCatView(cat: cat)
+                                    }
+                                )
+                            }
+                        }
                         .padding()
+                    }
                 } else {
-                    LazyVGrid(columns: columns, spacing: 16) {
-                        ForEach(viewModel.cats) { cat in
-                            NavigationLink(
-                                destination: CatDetails(cat: cat, catService: catService),
-                                label: {
-                                    SingleCatView(cat: cat)
-                                }
-                            )
-                            .onAppear {
-                                if cat.id == viewModel.cats.last?.id && viewModel.hasMore {
-                                    viewModel.fetchCats()
+                    if viewModel.cats.isEmpty && viewModel.error == nil && !viewModel.isLoading {
+                        Text("No cats available.")
+                            .foregroundColor(.gray)
+                            .padding()
+                    } else {
+                        LazyVGrid(columns: columns, spacing: 16) {
+                            ForEach(viewModel.cats) { cat in
+                                NavigationLink(
+                                    destination: CatDetails(cat: cat, catService: catService),
+                                    label: {
+                                        SingleCatView(cat: cat)
+                                    }
+                                )
+                                .onAppear {
+                                    if cat.id == viewModel.cats.last?.id && viewModel.hasMore {
+                                        viewModel.fetchCats()
+                                    }
                                 }
                             }
                         }
+                        .padding()
                     }
-                    .padding()
                 }
                 
                 if let error = viewModel.error {
