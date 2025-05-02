@@ -68,6 +68,7 @@ struct CatList: View {
                 
                 if let error = viewModel.error {
                     ErrorView(error: error) {
+                        viewModel.error = nil
                         viewModel.fetchCats()
                     }
                 }

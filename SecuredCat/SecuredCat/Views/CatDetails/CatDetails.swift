@@ -36,7 +36,10 @@ struct CatDetails: View {
                         Spacer()
                     }
                 } else if let error = viewModel.error {
-                    ErrorView(error: error, onRetry: viewModel.loadCatDetails)
+                    ErrorView(error: error) {
+                        viewModel.error = nil
+                        viewModel.loadCatDetails()
+                    }
                 } else {
                     Text("No information about the breed.")
                         .padding()

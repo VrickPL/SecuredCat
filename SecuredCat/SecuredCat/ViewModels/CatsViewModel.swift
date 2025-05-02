@@ -55,6 +55,8 @@ final class CatsViewModel: ObservableObject {
                 self?.isLoading = false
                 if case .failure(let fetchError) = completion {
                     self?.error = fetchError
+                } else {
+                    self?.error = nil
                 }
             } receiveValue: { [weak self] newCats in
                 self?.cats.append(contentsOf: newCats)

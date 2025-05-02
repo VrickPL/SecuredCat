@@ -33,6 +33,8 @@ final class CatDetailsViewModel: ObservableObject {
                 self?.isLoading = false
                 if case .failure(let err) = completion {
                     self?.error = err
+                } else {
+                    self?.error = nil
                 }
             } receiveValue: { [weak self] fetchedCat in
                 self?.cat = fetchedCat
